@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=NoteTaker kiosk
+Exec=chromium --kiosk http://127.0.0.1:8000
+Terminal=false
+X-GNOME-Autostart-enabled=true

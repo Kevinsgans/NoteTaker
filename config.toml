@@ -1,0 +1,15 @@
+# Development defaults; no hardware or model required.
+data_dir = "data"
+camera = "replay"
+replay_dir = "evaluation/replay"
+provider = "disabled"
+course = "Unsorted"
+auto_capture = false
+stable_seconds = 0.75
+blur_min = 45.0
+brightness_min = 45.0
+brightness_max = 250.0
+inference_timeout = 60.0
+preview_width = 640
+host = "127.0.0.1"
+port = 8000

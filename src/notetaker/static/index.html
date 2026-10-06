@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>NoteTaker</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script defer src="/static/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <span class="eyebrow">LOCAL NOTE LIBRARY</span>
+        <h1>NoteTaker<span class="dot">.</span></h1>
+      </div>
+      <span class="badge">Originals preserved · AI suggestions editable</span>
+    </header>
+    <main>
+      <section class="capture panel">
+        <div class="section-head">
+          <h2>Capture a page</h2>
+          <span id="camera-status" class="badge">Connecting</span>
+        </div>
+        <div class="viewfinder">
+          <canvas
+            id="preview"
+            width="640"
+            height="480"
+            aria-label="Camera preview with detected page outline"
+          ></canvas
+          ><span id="quality">Place one page on a contrasting surface</span>
+        </div>
+        <form id="settings">
+          <label
+            >Course<input
+              id="course"
+              value="Unsorted"
+              maxlength="100"
+              required /></label
+          ><label class="check"
+            ><input id="automatic" type="checkbox" />Automatic capture</label
+          ><button type="submit" class="secondary">Apply</button>
+        </form>
+        <div class="actions">
+          <button id="capture">Capture page</button
+          ><button id="force" class="secondary">Save anyway</button
+          ><button id="next" class="text">Next replay frame</button>
+        </div>
+        <p class="help">
+          A steady, legible page is saved before AI starts. “Save anyway”
+          preserves the frame for manual cropping.
+        </p>
+        <p id="health" class="help"></p>
+      </section>
+      <section class="library panel">
+        <div class="section-head">
+          <h2>Your pages</h2>
+          <span id="count" class="badge">0 pages</span>
+        </div>
+        <form id="search">
+          <label class="wide"
+            >Find notes<input
+              id="query"
+              placeholder="eigenvectors, chemistry, lecture topics…" /></label
+          ><label
+            >Course<input id="filter-course" placeholder="All courses" /></label
+          ><label>From<input id="after" type="date" /></label
+          ><label>To<input id="before" type="date" /></label
+          ><button type="submit">Search</button>
+        </form>
+        <div id="pages" class="cards"></div>
+      </section>
+      <section id="detail" class="panel" hidden>
+        <div class="section-head">
+          <h2 id="detail-heading">Review page</h2>
+          <button id="close-detail" class="text">Close</button>
+        </div>
+        <div class="detail-grid">
+          <div>
+            <img id="page-image" alt="Saved handwritten page" /><canvas
+              id="crop-canvas"
+              hidden
+              aria-label="Click four page corners"
+            ></canvas>
+            <div class="actions">
+              <button id="original" class="secondary">Show original</button
+              ><button id="crop" class="secondary">Adjust corners</button
+              ><button id="save-crop" hidden>Save crop</button>
+            </div>
+            <p id="crop-help" class="help"></p>
+          </div>
+          <div>
+            <p id="page-state" class="badge"></p>
+            <p id="suggestions" class="help"></p>
+            <form id="metadata">
+              <label>Title<input id="edit-title" maxlength="160" /></label
+              ><label
+                >Tags (up to five, comma separated)<input
+                  id="edit-tags" /></label
+              ><label
+                >Course<input
+                  id="edit-course"
+                  maxlength="100"
+                  required /></label
+              ><label
+                >Description<textarea
+                  id="edit-description"
+                  maxlength="4000"
+                  rows="4"
+                ></textarea></label
+              ><button>Save corrections</button>
+            </form>
+            <button id="retry" class="secondary">Retry metadata</button>
+            <details>
+              <summary>Processing measurements</summary>
+              <pre id="metrics"></pre>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div id="notice" role="status" aria-live="polite"></div>
+    <footer>
+      On-device capture & inference · Your image is the source of truth
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+data_dir = "/var/lib/notetaker"
+camera = "picamera2"
+provider = "hailo"
+model_path = "/opt/notetaker/models/qwen2-vl-2b-instruct.hef"
+model_size = 336
+strategy = "full"
+course = "Unsorted"
+auto_capture = false
+stable_seconds = 0.75
+blur_min = 45.0
+brightness_min = 45.0
+brightness_max = 250.0
+inference_timeout = 60.0
+preview_width = 640
+host = "0.0.0.0"
+port = 8000

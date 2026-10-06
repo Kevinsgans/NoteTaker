@@ -1,0 +1,27 @@
+[Unit]
+Description=NoteTaker camera and local metadata service
+After=local-fs.target network.target
+StartLimitIntervalSec=120
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=notetaker
+Group=notetaker
+SupplementaryGroups=video render
+WorkingDirectory=/opt/notetaker
+ExecStart=/opt/notetaker/.venv/bin/notetaker --config /etc/notetaker.toml serve
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+StateDirectory=notetaker
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/notetaker
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
