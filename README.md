@@ -2,7 +2,15 @@
 
 Move your right hand left and right to steer a paddle on the Pi display. Keep the ball in play for as many returns as you can. The first version needs one player, one camera, and one screen.
 
-**Status: game plan only.** The runnable project in this repository is still [NoteTaker](#existing-project-notetaker). Its tests and measurements belong to the scanner. The paddle game has not yet been implemented or tested on hardware.
+**Play on your Mac:** from this repository, run:
+
+```bash
+uv run --extra game wrist-paddle
+```
+
+Move the mouse horizontally, press **Space** to serve, and **Esc** to quit. Each paddle return earns one point; a miss ends the round. Press Space again to replay. The best score lasts for the session. The game dependencies are optional for [NoteTaker](#existing-project-notetaker).
+
+**Status:** mouse mode and game logic tested locally. The Pi wrist adapter is implemented; physical camera tracking and Hailo-10H performance are not yet verified.
 
 ## First experiment: can the camera follow your wrist?
 
@@ -21,11 +29,27 @@ hailo-pose --arch hailo10h --input rpi --show-fps
 
 Stand facing the camera and move one wrist across the frame. Confirm the demo follows it and record the model name and displayed FPS. The [pose README](https://github.com/hailo-ai/hailo-apps/blob/main/hailo_apps/python/pipeline_apps/pose_estimation/README.md) illustrates older Hailo devices, so verify the model for the **10H** before building around it. If no compatible model is listed, continue with mouse input on the Mac while resolving device support. See the [Hailo run guide](https://github.com/hailo-ai/hailo-apps/blob/main/doc/user_guide/running_applications.md) for setup and CLI options.
 
-## Build the first playable version
+## Play using your wrist on the Pi
 
-1. **Make the game work with a mouse.** Use Python and Pygame to draw one paddle along the bottom and a ball that bounces off the walls and ceiling. Award one point per paddle return. A miss ends the round; Space starts another. Keep ball movement based on elapsed time so camera FPS does not determine game speed.
-2. **Replace the mouse with wrist position.** Adapt Hailo’s [pose callback](https://github.com/hailo-ai/hailo-apps/blob/main/hailo_apps/python/pipeline_apps/pose_estimation/pose_estimation.py). Read the right wrist, convert its position from the person’s bounding box to a fraction of the full frame, and pass just that position and its timestamp to the game. The game reads the latest sample without waiting for a camera frame. Mirror the horizontal coordinate once so moving right moves the paddle right.
-3. **Make it comfortable to play.** Smooth small wrist movements and clamp the paddle inside the screen. If tracking disappears for half a second, freeze the ball and show “Raise your right hand to resume.” Reset the smoothing position when the wrist returns so the paddle does not sweep across the screen.
+After the upstream demo works, stop it with Ctrl+C to free the camera. In the terminal with the Hailo environment still active, save its interpreter path, then change to **this project's checkout** and launch the game:
+
+```bash
+POSE_PYTHON="$(command -v python)"
+cd /path/to/NoteTaker
+uv run --extra game wrist-paddle --input pose --pose-python "$POSE_PYTHON"
+```
+
+Replace the checkout path with your local directory. Use the Pi desktop/display. The game runs its pose worker in the Hailo environment and keeps Pygame in the project's environment. If the upstream demo required a specific Hailo-10H pose model, pass the same `--hef-path /path/to/model.hef` here.
+
+Face the camera as the only player and press Space. Move your right wrist left or right. The Python [pose callback](https://github.com/hailo-ai/hailo-apps/blob/main/hailo_apps/python/pipeline_apps/pose_estimation/pose_estimation.py) supplies person-relative wrist coordinates; the adapter converts them to frame coordinates, and the game mirrors and smooths them. If the wrist disappears for half a second, play pauses. Show your wrist again to resume. In pose mode the FPS readout counts pose callbacks received per second; in mouse mode it shows display FPS.
+
+To record the tracking status and score during a playtest (from the same terminal):
+
+```bash
+uv run --extra game wrist-paddle --input pose --pose-python "$POSE_PYTHON" 2>&1 | rg --line-buffered '\[wrist_paddle\]' > wrist-paddle-debug.log
+```
+
+Run the game logic and adapter tests with `uv run pytest -q tests/test_paddle.py`.
 
 **First playtest:** finish a round using only your wrist after pressing Start. Check that moving left and right reaches both edges, one return gives exactly one point, and briefly stepping out of view pauses play without costing a round. Record one minute of play with the observed pose FPS and any missed or jittery movements. That is enough for the first demo.
 
